@@ -5,23 +5,56 @@ const localCache = {};
 const Weather = () => {
   const [location, setLocation] = useState("Mumbai"); // @todo: make default to current browser
   const [forecastData, setForecastData] = useState(null);
+
   useEffect(() => {
-    getWeather();
+    getLocation();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const getWeather = async () => {
+  const getWeather = async (latLong = null) => {
     let locationValue = location.toLowerCase();
 
     if (localCache[locationValue]) {
       setForecastData(localCache[locationValue]);
     } else {
       const res = await fetch(
-        `https://api.weatherapi.com/v1/forecast.json?key=d132c2c3f7844fdab75160409232611&q=${locationValue}&days=8&aqi=no&alerts=no`,
+        `https://api.weatherapi.com/v1/forecast.json?key=d132c2c3f7844fdab75160409232611&q=${
+          latLong ? latLong : locationValue
+        }&days=8&aqi=no&alerts=no`,
       );
 
       const data = await res.json();
       localCache[locationValue] = data;
+
+      setLocation(data?.location?.name);
       setForecastData(data);
+    }
+  };
+
+  const getLocation = () => {
+    let successCallback = (pos) => {
+      getWeather(pos?.coords?.latitude + "," + pos?.coords?.longitude);
+    };
+
+    let errorCallback = (pos) => {
+      console.log("please allow location access!!"); // can be a better error handling / ux flow here.
+    };
+
+    if (navigator.geolocation) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then((permissionStatus) => {
+          if (permissionStatus.state === "denied") {
+            alert("Please allow location access.");
+            window.location.href = "app-settings:location";
+          } else {
+            navigator.geolocation.getCurrentPosition(
+              successCallback,
+              errorCallback,
+            );
+          }
+        });
+    } else {
+      alert("Geolocation is not supported in your browser.");
     }
   };
 
