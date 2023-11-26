@@ -3,15 +3,15 @@ import Image from "next/image";
 const localCache = {};
 
 const Weather = () => {
-  const [location, setLocation] = useState("Mumbai"); // @todo: make default to current browser
+  const [location, setLocation] = useState("");
   const [forecastData, setForecastData] = useState(null);
 
   useEffect(() => {
     getLocation();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const getWeather = async (latLong = null) => {
-    let locationValue = location.toLowerCase();
+  const getWeather = async (e, latLong = null) => {
+    let locationValue = location?.toLowerCase();
 
     if (localCache[locationValue]) {
       setForecastData(localCache[locationValue]);
@@ -32,7 +32,7 @@ const Weather = () => {
 
   const getLocation = () => {
     let successCallback = (pos) => {
-      getWeather(pos?.coords?.latitude + "," + pos?.coords?.longitude);
+      getWeather(null, pos?.coords?.latitude + "," + pos?.coords?.longitude);
     };
 
     let errorCallback = (pos) => {
@@ -58,6 +58,7 @@ const Weather = () => {
     }
   };
 
+  //@todo: loading states and error handling can be better.
   return (
     <div className="container text-gray-800 backdrop-blur-sm bg-white/30 rounded-xl p-8 m-4 md:m-8 shadow max-w-md transform transition hover:-translate-y-0.5">
       <div className="flex flex-col items-center">
@@ -83,7 +84,7 @@ const Weather = () => {
             Search
           </button>
         </div>
-        {forecastData && (
+        {forecastData?.current && (
           <div className="flex items-center gap-4 m-4 bg-white shadow rounded-lg p-4 w-72">
             <p className="text-lg">Today</p>
             <Image
@@ -103,7 +104,7 @@ const Weather = () => {
 
         <div className="space-y-4">
           {forecastData &&
-            forecastData.forecast.forecastday.map((data, idx) => {
+            forecastData?.forecast?.forecastday?.map((data, idx) => {
               if (idx == 0) return <div key={data?.date_epoch}></div>;
               return (
                 <div
