@@ -1,15 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-const localCache = {};
+
+const localCache = {}; // used to cache the api call results
 
 const Weather = () => {
+  // state variables to store location and forecast data
   const [location, setLocation] = useState("");
   const [forecastData, setForecastData] = useState(null);
 
+  // on component load get user's current location and show weather data
   useEffect(() => {
     getLocation();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // get current and 7d weather forecast based on location (city or lat-long). locally cache results.
   const getWeather = async (e, latLong = null) => {
     let locationValue = location?.toLowerCase();
 
@@ -30,6 +34,7 @@ const Weather = () => {
     }
   };
 
+  // get user's current location (latitude/longitude); on success - get weather for current location
   const getLocation = () => {
     let successCallback = (pos) => {
       getWeather(null, pos?.coords?.latitude + "," + pos?.coords?.longitude);
@@ -39,6 +44,7 @@ const Weather = () => {
       console.log("please allow location access!!"); // can be a better error handling / ux flow here.
     };
 
+    //asking for persmissions
     if (navigator.geolocation) {
       navigator.permissions
         .query({ name: "geolocation" })
