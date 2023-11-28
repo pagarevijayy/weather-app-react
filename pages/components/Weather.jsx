@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Loader from "./Loader";
 
 const localCache = {}; // used to cache the api call results
 
 const Weather = () => {
-  // state variables to store location and forecast data
+  // state variables to store location, forecast data, loading state
   const [location, setLocation] = useState("");
   const [forecastData, setForecastData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // on component load get user's current location and show weather data
   useEffect(() => {
@@ -15,11 +17,18 @@ const Weather = () => {
 
   // get current and 7d weather forecast based on location (city or lat-long). locally cache results.
   const getWeather = async (e, latLong = null) => {
+    //reset states
+    setLoading(true);
+    setForecastData(null);
+
     let locationValue = location?.toLowerCase();
 
     if (localCache[locationValue]) {
+      // use cache value
       setForecastData(localCache[locationValue]);
+      setLoading(false);
     } else {
+      // api call
       const res = await fetch(
         `https://api.weatherapi.com/v1/forecast.json?key=d132c2c3f7844fdab75160409232611&q=${
           latLong ? latLong : locationValue
@@ -31,6 +40,7 @@ const Weather = () => {
 
       setLocation(data?.location?.name);
       setForecastData(data);
+      setLoading(false);
     }
   };
 
@@ -90,7 +100,12 @@ const Weather = () => {
             Search
           </button>
         </div>
-        {forecastData?.current && (
+
+        {/* loading state */}
+        {loading && !forecastData?.current && <Loader />}
+
+        {/* current weather  */}
+        {!loading && forecastData?.current && (
           <div className="flex items-center gap-4 m-4 bg-white shadow rounded-lg p-4 w-72">
             <p className="text-lg">Today</p>
             <Image
@@ -108,8 +123,10 @@ const Weather = () => {
           </div>
         )}
 
+        {/* 7d forecast */}
         <div className="space-y-4">
-          {forecastData &&
+          {!loading &&
+            forecastData &&
             forecastData?.forecast?.forecastday?.map((data, idx) => {
               if (idx == 0) return <div key={data?.date_epoch}></div>;
               return (
