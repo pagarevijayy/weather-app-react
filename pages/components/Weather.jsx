@@ -35,7 +35,7 @@ const Weather = () => {
         const res = await fetch(
           `https://api.weatherapi.com/v1/forecast.json?key=d132c2c3f7844fdab75160409232611&q=${
             latLong ? latLong : locationValue
-          }&days=8&aqi=no&alerts=no`,
+          }&days=9&aqi=no&alerts=no`,
         );
 
         const data = await res.json();
@@ -86,7 +86,7 @@ const Weather = () => {
   };
 
   return (
-    <div className="container text-gray-800 backdrop-blur-sm bg-white/30 rounded-xl p-8 m-4 md:m-8 shadow max-w-md transform transition hover:-translate-y-0.5">
+    <div className="container text-gray-800 backdrop-blur-sm bg-white/30 rounded-xl p-8 m-4 md:m-8 shadow max-w-md lg:max-w-4xl transform transition hover:-translate-y-0.5">
       <div className="flex flex-col items-center">
         <h1 className="font-bold text-3xl"> ⛅️ Weather App</h1>
         <div className="m-1">
@@ -134,7 +134,7 @@ const Weather = () => {
         )}
 
         {/* 7d forecast */}
-        <div className="space-y-4">
+        <div className="space-y-4 lg:flex lg:flex-wrap lg:justify-center">
           {!loading &&
             forecastData &&
             forecastData?.forecast?.forecastday?.map((data, idx) => {

@@ -2,13 +2,13 @@
 
 [Live](https://zweather-app-react.vercel.app/)
 
-A simple weather app that allows users to check current weather conditions for a particular location and gives 7-day forecast
+A simple weather app that allows users to check current weather conditions for a particular location and gives around 7-day forecast
 
 **Functionality**
 
-- By default, the app shows the weather of current browser location and 7 days forecast
+- By default, the app shows the weather of current browser location and around 7 days forecast
 - It has a searchable function to view weather of any particular location
-- Mobile responsive design
+- Responsive design
 
 **Tech**
 
