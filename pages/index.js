@@ -1,8 +1,8 @@
 import Head from "next/head";
 import Weather from "./components/Weather";
-import { Inter } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Home() {
   return (
@@ -17,6 +17,7 @@ export default function Home() {
       <main className="bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-400 min-h-screen flex justify-center items-center p-4">
         <Weather />
       </main>
+      <ToastContainer />
     </>
   );
 }

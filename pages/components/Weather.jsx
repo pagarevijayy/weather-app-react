@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
 import Loader from "./Loader";
 
 const localCache = {}; // used to cache the api call results
@@ -29,18 +31,27 @@ const Weather = () => {
       setLoading(false);
     } else {
       // api call
-      const res = await fetch(
-        `https://api.weatherapi.com/v1/forecast.json?key=d132c2c3f7844fdab75160409232611&q=${
-          latLong ? latLong : locationValue
-        }&days=8&aqi=no&alerts=no`,
-      );
+      try {
+        const res = await fetch(
+          `https://api.weatherapi.com/v1/forecast.json?key=d132c2c3f7844fdab75160409232611&q=${
+            latLong ? latLong : locationValue
+          }&days=8&aqi=no&alerts=no`,
+        );
 
-      const data = await res.json();
-      localCache[locationValue] = data;
+        const data = await res.json();
 
-      setLocation(data?.location?.name);
-      setForecastData(data);
-      setLoading(false);
+        if (data?.error?.code) {
+          throw new Error(data?.error?.message);
+        }
+
+        localCache[locationValue] = data;
+        setForecastData(data);
+        setLocation(data?.location?.name);
+      } catch (e) {
+        toast.error(`${e?.message}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -74,7 +85,6 @@ const Weather = () => {
     }
   };
 
-  //@todo: loading states and error handling can be better.
   return (
     <div className="container text-gray-800 backdrop-blur-sm bg-white/30 rounded-xl p-8 m-4 md:m-8 shadow max-w-md transform transition hover:-translate-y-0.5">
       <div className="flex flex-col items-center">
